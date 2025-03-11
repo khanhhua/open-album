@@ -1,6 +1,7 @@
 package com.fatmandesigner.openalbum;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 import com.fatmandesigner.openalbum.model.Album;
@@ -27,27 +28,27 @@ public class CtrlAlbumBrowser implements Initializable {
 	private AnchorPane imagesAnchorPane;
 
 	@FXML
-	private ImageView imageView;
+	private ImageView largeImageView;
 
   public void initialize(URL _location, ResourceBundle _bundle) {
     this.imagesPane.prefWrapLengthProperty().bind(this.imagesAnchorPane.widthProperty());
   }
 
   public void setCurrentPhoto(Image image) {
-    this.imageView.setImage(image);
+    this.largeImageView.setImage(image);
   }
 
   public void setAlbums(ObservableList<Album> albums) {
     this.albumListView.setItems(albums);
   }
 
-  public void setTiledImages(ObservableList<Image> images) {
+  public void setTiledImages(Collection<Image> images) {
     ObservableList<Node> children = this.imagesPane.getChildren();
 
     for (Image img:images) {
       ImageView item = new ImageView(img);
+      item.setPreserveRatio(true);
       item.setFitWidth(100);
-      item.setFitHeight(100);
       children.add(item);
     }
     

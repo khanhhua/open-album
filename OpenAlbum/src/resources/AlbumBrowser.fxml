@@ -32,6 +32,6 @@
       </ScrollPane>
     </AnchorPane>
   </SplitPane>
-	<ImageView fx:id="imageView" visible="false"></ImageView>
+	<ImageView fx:id="largeImageView" visible="false"></ImageView>
 </AnchorPane>
 
