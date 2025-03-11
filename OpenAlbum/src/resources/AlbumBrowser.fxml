@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.ImageView?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/2.2" xmlns:fx="http://javafx.com/fxml/1"
+    prefWidth="680" prefHeight="480"
+    fx:controller="com.fatmandesigner.openalbum.CtrlAlbumBrowser">
+	<children>
+	 	<SplitPane dividerPositions="0.25">
+			<ListView fx:id="albumListView"></ListView> 	
+		 	<ImageView fx:id="imageView"></ImageView>
+	 	</SplitPane>
+	</children>
+</AnchorPane>
+

@@ -7,6 +7,14 @@
   <description>Open source album viewer for SD card</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <resources>
+    	<resource>
+    		<includes>
+    			<include>**/*.fxml</include>
+			</includes>
+    		<directory>src/resources</directory>
+    	</resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -24,6 +32,11 @@
       <artifactId>javafx-controls</artifactId>
       <version>23</version>
   	  <scope>compile</scope>
-  	</dependency>
+  	</dependency>  	
+	<dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>23</version>
+    </dependency>
   </dependencies>
 </project>
