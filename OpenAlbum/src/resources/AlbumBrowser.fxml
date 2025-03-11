@@ -3,16 +3,35 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/2.2" xmlns:fx="http://javafx.com/fxml/1"
-    prefWidth="680" prefHeight="480"
+    prefWidth="800" prefHeight="480"
     fx:controller="com.fatmandesigner.openalbum.CtrlAlbumBrowser">
-	<children>
-	 	<SplitPane dividerPositions="0.25">
-			<ListView fx:id="albumListView"></ListView> 	
-		 	<ImageView fx:id="imageView"></ImageView>
-	 	</SplitPane>
-	</children>
+  <SplitPane dividerPositions="0.1"
+      AnchorPane.topAnchor="0.0"
+      AnchorPane.rightAnchor="0.0"
+      AnchorPane.bottomAnchor="0.0"
+      AnchorPane.leftAnchor="0.0"
+  >
+    <ListView fx:id="albumListView" maxWidth="200"></ListView>
+    <AnchorPane fx:id="imagesAnchorPane">
+      <ScrollPane
+          AnchorPane.topAnchor="0.0"
+          AnchorPane.rightAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0"
+      >
+        <FlowPane fx:id="imagesPane"
+          hgap="8"
+          vgap="8"
+          prefWrapLength="800"
+          ></FlowPane>
+      </ScrollPane>
+    </AnchorPane>
+  </SplitPane>
+	<ImageView fx:id="imageView" visible="false"></ImageView>
 </AnchorPane>
 

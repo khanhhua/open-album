@@ -3,11 +3,10 @@ package com.fatmandesigner.openalbum;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import com.fatmandesigner.openalbum.model.Album;
 import com.fatmandesigner.openalbum.model.AlbumList;
+import com.fatmandesigner.openalbum.model.ImageList;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +19,8 @@ public class OpenAlbumFx extends Application  {
 	
 	@Override
 	public void start(Stage stage) throws IOException {
+    stage.setTitle("Open Album");
+
 		URL resourceURL = getClass().getResource("/AlbumBrowser.fxml");
 		FXMLLoader loader = new FXMLLoader(resourceURL);
 		Parent root = loader.load();
@@ -31,6 +32,10 @@ public class OpenAlbumFx extends Application  {
 
 		CtrlAlbumBrowser controller = loader.<CtrlAlbumBrowser>getController();
 		controller.setCurrentPhoto(image);
+
+    ImageList images = new ImageList();
+    for (int i=0; i<80; i++) images.add(image);
+    controller.setTiledImages(images);
 
     AlbumList albums = new AlbumList();
     Album album = new Album("202aa277-aa68-4a91-bedd-9009af2cc12a");
