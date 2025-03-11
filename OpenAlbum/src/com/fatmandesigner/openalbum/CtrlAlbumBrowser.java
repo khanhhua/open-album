@@ -2,22 +2,36 @@ package com.fatmandesigner.openalbum;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.WeakHashMap;
 
 import com.fatmandesigner.openalbum.model.Album;
+import com.fatmandesigner.openalbum.model.Photo;
 
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.WindowEvent;
 
 public class CtrlAlbumBrowser implements Initializable {
+
 	@FXML
 	private ListView<Album> albumListView;
 	
@@ -26,12 +40,46 @@ public class CtrlAlbumBrowser implements Initializable {
 
 	@FXML
 	private AnchorPane imagesAnchorPane;
+	
+  @FXML
+	private ScrollPane imagesScrollPane;
 
 	@FXML
 	private ImageView largeImageView;
 
+  private ObservableList<Photo> photos;
+
+  private ObjectBinding<Bounds> visibleScrollBounds;
+
+  private FilteredList<Node> visibleImageViews;
+
+  private WeakHashMap<Node, Photo> npMap = new WeakHashMap<>();
+
   public void initialize(URL _location, ResourceBundle _bundle) {
     this.imagesPane.prefWrapLengthProperty().bind(this.imagesAnchorPane.widthProperty());
+
+    this.visibleScrollBounds = Bindings.createObjectBinding(() -> {
+      Bounds viewportBounds = this.imagesScrollPane.getViewportBounds();
+      Bounds inScene = this.imagesScrollPane.localToScene(viewportBounds);
+      Bounds result = this.imagesPane.sceneToLocal(inScene);
+
+      return result;
+    }, this.imagesScrollPane.vvalueProperty());
+
+    this.visibleImageViews = new FilteredList<>(this.imagesPane.getChildren());
+    this.visibleImageViews.predicateProperty().bind(Bindings.createObjectBinding(() -> 
+      node -> {
+        double v = this.imagesScrollPane.getVvalue();
+        double index = Double.valueOf(node.getId()) - 1;
+        int count = photos.size();
+
+        return (index / count) < v + (24.0 / count);
+      }
+    , this.imagesScrollPane.vvalueProperty(), visibleScrollBounds));
+
+    this.imagesScrollPane.setOnScrollFinished((ScrollEvent e) -> {
+      this.loadImagesInView();
+    });
   }
 
   public void setCurrentPhoto(Image image) {
@@ -42,15 +90,33 @@ public class CtrlAlbumBrowser implements Initializable {
     this.albumListView.setItems(albums);
   }
 
-  public void setTiledImages(Collection<Image> images) {
+  public void setTiledPhotos(Collection<Photo> photos) {
+    this.photos = FXCollections.observableArrayList();
+    this.photos.addAll(photos);
     ObservableList<Node> children = this.imagesPane.getChildren();
+    children.clear();
 
-    for (Image img:images) {
-      ImageView item = new ImageView(img);
+    int id = 1;
+    for (Photo photo:photos) {
+      ImageView item = new ImageView(photo.getImage());
+      item.setId(Integer.valueOf(++id).toString());
+      item.setViewport(new Rectangle2D(0, 0, 200, 200));
+      npMap.put(item, photo);
+
       item.setPreserveRatio(true);
-      item.setFitWidth(100);
+      item.setFitHeight(100);
       children.add(item);
     }
-    
+  }
+
+  public void loadImagesInView() {
+    for (Node node:visibleImageViews) {
+      Photo photo = npMap.get(node);
+      if (photo.isLoaded()) continue;
+
+      photo.load();
+      ((ImageView)node).setImage(photo.getImage());
+    }
   }
 }
+

@@ -19,6 +19,7 @@
     <ListView fx:id="albumListView" maxWidth="200"></ListView>
     <AnchorPane fx:id="imagesAnchorPane">
       <ScrollPane
+          fx:id="imagesScrollPane"
           AnchorPane.topAnchor="0.0"
           AnchorPane.rightAnchor="0.0"
           AnchorPane.bottomAnchor="0.0"
