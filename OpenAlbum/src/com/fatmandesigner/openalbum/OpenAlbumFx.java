@@ -22,10 +22,14 @@ import javafx.stage.Stage;
 
 public class OpenAlbumFx extends Application  {
 
+  private AlbumSource albumSource;
+
   private Runnable onceListener = null;
 
 	@Override
 	public void start(Stage stage) throws IOException {
+    albumSource = new AlbumSource();
+
     stage.setTitle("Open Album");
 
 		URL resourceURL = getClass().getResource("/AlbumBrowser.fxml");
@@ -37,28 +41,13 @@ public class OpenAlbumFx extends Application  {
 
 		CtrlAlbumBrowser controller = loader.<CtrlAlbumBrowser>getController();
 
-    List<Photo> photos = new ArrayList<>();
-    for (int i=0; i<800; i++) {
-      Photo photo = new Photo("./data/leaf-65.jpg");
-      photos.add(photo);
-    }
-    controller.setTiledPhotos(photos);
+    controller.setDataSource(albumSource);
 
-    ObservableList<Album> albums = FXCollections.observableArrayList();
-    Album album = new Album("202aa277-aa68-4a91-bedd-9009af2cc12a");
-    album.setName("Default");
-    albums.add(album);
-
-    album = new Album("5daf7339-fd12-4025-a1d2-1b407d09eee4");
-    album.setName("Precious Memories");
-    albums.add(album);
-
-    controller.setAlbums(albums);
-    onceListener = () -> {
-      controller.loadImagesInView();  
-      scene.removePostLayoutPulseListener(onceListener);
-    };
-    scene.addPostLayoutPulseListener(onceListener);
+//    onceListener = () -> {
+//      controller.loadImagesInView();  
+//      scene.removePostLayoutPulseListener(onceListener);
+//    };
+//    scene.addPostLayoutPulseListener(onceListener);
 		
 		stage.show();
 	}
