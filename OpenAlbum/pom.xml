@@ -11,7 +11,7 @@
     	<resource>
     		<includes>
     			<include>**/*.fxml</include>
-			</includes>
+			  </includes>
     		<directory>src/resources</directory>
     	</resource>
     </resources>
@@ -23,20 +23,32 @@
           <release>21</release>
         </configuration>
       </plugin>
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>com.fatmandesigner.openalbum.OpenAlbumFx</mainClass>
-            </manifest>
-          </archive>
-          <descriptors>
-            <descriptor>src/assembly/distribution.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <executions>
+          <execution>
+            <id>create-executable-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/distribution.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <mainClass>com.fatmandesigner.openalbum.OpenAlbumFx</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
+        -->
     </plugins>
   </build>
   
@@ -56,6 +68,7 @@
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.49.1.0</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

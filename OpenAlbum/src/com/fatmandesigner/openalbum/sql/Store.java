@@ -18,7 +18,10 @@ public class Store {
 
   public Store(String url) {
     try {
+      Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection(url);
+    } catch (ClassNotFoundException ex) {
+      System.err.println("Cannot find Sqlite JDBC Driver");
     } catch (SQLException ex) {}
   }
 

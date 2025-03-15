@@ -8,6 +8,10 @@
   <fileSets>
     <fileSet>
       <directory>${basedir}</directory>
+      <excludes>
+        <exclude>data/*</exclude>
+        <exclude>src/*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
   <includeBaseDirectory>false</includeBaseDirectory>
