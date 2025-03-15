@@ -65,16 +65,23 @@ public class CtrlAlbumBrowser implements Initializable {
   public void initialize(URL _location, ResourceBundle _bundle) {
     this.imagesPane.prefWrapLengthProperty().bind(this.imagesAnchorPane.widthProperty());
 
-    this.visibleImageViews = new FilteredList<>(this.imagesPane.getChildren());
-   // this.visibleImageViews.predicateProperty().bind(Bindings.createObjectBinding(() -> 
-   //   node -> {
-   //     double v = this.imagesScrollPane.getVvalue();
-   //     double index = Double.valueOf(node.getId()) - 1;
-   //     int count = photosProperty.get().size();
+    this.visibleScrollBounds = Bindings.createObjectBinding(() -> {
+      Bounds viewportBounds = this.imagesScrollPane.getViewportBounds();
+      Bounds inScene = this.imagesScrollPane.localToScene(viewportBounds);
+      Bounds result = this.imagesPane.sceneToLocal(inScene);
 
-   //     return (index / count) < v + (24.0 / count);
-   //   }
-   // , this.imagesScrollPane.vvalueProperty(), visibleScrollBounds));
+      return result;
+    }, this.imagesScrollPane.vvalueProperty());
+    this.visibleImageViews = new FilteredList<>(this.imagesPane.getChildren());
+    this.visibleImageViews.predicateProperty().bind(Bindings.createObjectBinding(() -> 
+      node -> {
+        double v = this.imagesScrollPane.getVvalue();
+        double index = Double.valueOf(node.getId()) - 1;
+        int count = photosProperty.get().size();
+
+        return (index / count) < v + (24.0 / count);
+      }
+    , this.imagesScrollPane.vvalueProperty(), visibleScrollBounds));
 
     this.photosProperty.addListener((ListChangeListener.Change<? extends Photo> c) -> {
       while (c.next()) {
@@ -113,14 +120,6 @@ public class CtrlAlbumBrowser implements Initializable {
       return FXCollections.observableArrayList(photos);
     }, this.albumListView.itemsProperty(),
       this.albumListView.getSelectionModel().selectedItemProperty()));
-
-    this.visibleScrollBounds = Bindings.createObjectBinding(() -> {
-      Bounds viewportBounds = this.imagesScrollPane.getViewportBounds();
-      Bounds inScene = this.imagesScrollPane.localToScene(viewportBounds);
-      Bounds result = this.imagesPane.sceneToLocal(inScene);
-
-      return result;
-    }, this.imagesScrollPane.vvalueProperty());
 
     this.imagesScrollPane.setOnScrollFinished((ScrollEvent e) -> {
       this.loadImagesInView();
