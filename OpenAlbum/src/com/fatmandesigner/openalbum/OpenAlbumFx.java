@@ -2,6 +2,7 @@ package com.fatmandesigner.openalbum;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 
 import com.fatmandesigner.openalbum.sql.Store;
 
@@ -18,8 +19,10 @@ public class OpenAlbumFx extends Application  {
   private AlbumSource albumSource;
 
 	@Override
-	public void start(Stage stage) throws IOException {
-    store = new Store("jdbc:sqlite:data/albums.sqlite");
+	public void start(Stage stage) throws IOException, SQLException {
+    store = new Store("data/albums.db");
+    store.init();
+
     albumSource = new AlbumSource(store);
     albumSource.sync();
 

@@ -1,5 +1,9 @@
 package com.fatmandesigner.openalbum.sql;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,14 +19,53 @@ import com.fatmandesigner.openalbum.model.Photo;
 
 public class Store {
   private Connection conn;
+  private boolean initialized = false;
 
-  public Store(String url) {
+  public Store(String dbPath) {
     try {
       Class.forName("org.sqlite.JDBC");
-      conn = DriverManager.getConnection(url);
+      conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
     } catch (ClassNotFoundException ex) {
       System.err.println("Cannot find Sqlite JDBC Driver");
-    } catch (SQLException ex) {}
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  public void init() throws SQLException {
+    Statement st = conn.createStatement();
+    ResultSet rs = st.executeQuery("SELECT type FROM sqlite_schema");
+
+    if (rs.next()) {
+      initialized = true;
+      return;
+    }
+
+    try (InputStream instream = getClass().getResourceAsStream("/init.sql")) {
+      StringBuilder builder = new StringBuilder();
+      BufferedReader br = new BufferedReader(new InputStreamReader(instream));
+
+      String line;
+      while ((line = br.readLine()) != null) {
+        builder.append(line);
+        builder.append("\n");
+      }
+
+      String[] sqlStatements = builder.toString().split(";");
+      for(String sql:sqlStatements) {
+        if (sql.trim().length() == 0) {
+          continue;
+        }
+
+        System.out.println("SQL Init statement: " + sql);
+        st = conn.createStatement();
+        st.execute(sql);
+      }
+
+      initialized = true;
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
   }
 
   public List<Album> findAlbums() throws SQLException {

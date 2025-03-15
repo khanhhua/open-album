@@ -11,6 +11,7 @@
     	<resource>
     		<includes>
     			<include>**/*.fxml</include>
+    			<include>**/*.sql</include>
 			  </includes>
     		<directory>src/resources</directory>
     	</resource>
