@@ -10,6 +10,7 @@ import com.fatmandesigner.openalbum.model.Album;
 import com.fatmandesigner.openalbum.model.AlbumList;
 import com.fatmandesigner.openalbum.model.ImageList;
 import com.fatmandesigner.openalbum.model.Photo;
+import com.fatmandesigner.openalbum.sql.Store;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -22,13 +23,14 @@ import javafx.stage.Stage;
 
 public class OpenAlbumFx extends Application  {
 
-  private AlbumSource albumSource;
+  private Store store;
 
-  private Runnable onceListener = null;
+  private AlbumSource albumSource;
 
 	@Override
 	public void start(Stage stage) throws IOException {
-    albumSource = new AlbumSource();
+    store = new Store("jdbc:sqlite:data/albums.sqlite");
+    albumSource = new AlbumSource(store);
     albumSource.sync();
 
     stage.setTitle("Open Album");
@@ -44,12 +46,6 @@ public class OpenAlbumFx extends Application  {
 
     controller.setDataSource(albumSource);
 
-//    onceListener = () -> {
-//      controller.loadImagesInView();  
-//      scene.removePostLayoutPulseListener(onceListener);
-//    };
-//    scene.addPostLayoutPulseListener(onceListener);
-		
 		stage.show();
 	}
 	

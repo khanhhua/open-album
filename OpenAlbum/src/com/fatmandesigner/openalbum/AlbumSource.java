@@ -14,30 +14,22 @@ import java.util.WeakHashMap;
 
 import com.fatmandesigner.openalbum.model.Album;
 import com.fatmandesigner.openalbum.model.Photo;
+import com.fatmandesigner.openalbum.sql.Store;
 
 public class AlbumSource {
+  private Store store;
   private List<Album> albums;
   private WeakHashMap<Album, List<Photo>> cache;
 
-  public AlbumSource() {
+  public AlbumSource(Store store) {
+    this.store = store;
     this.cache = new WeakHashMap<>();
     this.albums = Collections.emptyList();
   }
 
   public void sync() {
-    albums = new ArrayList<>();
-
-    try (Connection conn = openConnection()) {
-      Statement st = conn.createStatement();
-      ResultSet rs = st.executeQuery("SELECT uuid, name FROM albums");
-
-      while (rs.next()) {
-        Album album = new Album(rs.getString("uuid"));
-        album.setName(rs.getString("name"));
-        albums.add(album);
-      }
-
-      st.close();
+    try {
+      albums = store.findAlbums();
     } catch (SQLException ex) {
       System.out.println("SQLx: " + ex.getMessage());
     }
@@ -58,29 +50,13 @@ public class AlbumSource {
       return cache.get(album.get());
     }
 
-    List<Photo> photos = new ArrayList<>();
-    try (Connection conn = openConnection()) {
-      PreparedStatement st = conn.prepareStatement("SELECT uuid, ext FROM photos WHERE album_id = ?");
-      st.setString(1, albumId);
-
-      ResultSet rs = st.executeQuery();
-      while (rs.next()) {
-        String photoId = rs.getString("uuid");
-        String photoExt = rs.getString("ext");
-        Photo photo = new Photo(String.format("data/%s.%s", photoId, photoExt));
-
-        photos.add(photo);
-      }
-
-      st.close();
-
+    try {
+      List<Photo> photos = store.findPhotos(albumId);
       cache.put(album.get(), photos);
-
       return photos;
     } catch (SQLException ex) {
       return Collections.emptyList();
     }
-
   }
 
   private Connection openConnection() throws SQLException {

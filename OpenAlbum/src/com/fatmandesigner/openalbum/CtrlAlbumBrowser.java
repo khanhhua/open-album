@@ -65,31 +65,41 @@ public class CtrlAlbumBrowser implements Initializable {
   public void initialize(URL _location, ResourceBundle _bundle) {
     this.imagesPane.prefWrapLengthProperty().bind(this.imagesAnchorPane.widthProperty());
 
-    this.photosProperty.addListener(new ListChangeListener<Photo>() {
-      @Override
-      public void onChanged(ListChangeListener.Change<? extends Photo> c) {
-        while (c.next()) {
-          if (c.wasAdded()) {
-            ObservableList<Node> children = CtrlAlbumBrowser.this.imagesPane.getChildren();
-            children.clear();
+    this.visibleImageViews = new FilteredList<>(this.imagesPane.getChildren());
+   // this.visibleImageViews.predicateProperty().bind(Bindings.createObjectBinding(() -> 
+   //   node -> {
+   //     double v = this.imagesScrollPane.getVvalue();
+   //     double index = Double.valueOf(node.getId()) - 1;
+   //     int count = photosProperty.get().size();
 
-            ObservableList<Photo> photos = photosProperty.get();
+   //     return (index / count) < v + (24.0 / count);
+   //   }
+   // , this.imagesScrollPane.vvalueProperty(), visibleScrollBounds));
 
-            for (int i=c.getFrom(); i<c.getTo(); i++) {
-              Photo photo = photos.get(i);
+    this.photosProperty.addListener((ListChangeListener.Change<? extends Photo> c) -> {
+      while (c.next()) {
+        if (c.wasAdded()) {
+          ObservableList<Node> children = CtrlAlbumBrowser.this.imagesPane.getChildren();
+          children.clear();
 
-              ImageView item = new ImageView(photo.getImage());
-              item.setId(Integer.valueOf(i).toString());
-              item.setViewport(new Rectangle2D(0, 0, 200, 200));
-              npMap.put(item, photo);
+          ObservableList<Photo> photos = photosProperty.get();
 
-              item.setPreserveRatio(true);
-              item.setFitHeight(100);
-              children.add(item);
-            }
+          for (int i=c.getFrom(); i<c.getTo(); i++) {
+            Photo photo = photos.get(i);
+
+            ImageView item = new ImageView(photo.getImage());
+            item.setId(Integer.valueOf(i).toString());
+            item.setViewport(new Rectangle2D(0, 0, 200, 200));
+            npMap.put(item, photo);
+
+            item.setPreserveRatio(true);
+            item.setFitHeight(100);
+            children.add(item);
           }
         }
       }
+
+      this.loadImagesInView();
     });
     this.photosProperty.bind(Bindings.createObjectBinding(() -> {
       Album album = this.albumListView.getSelectionModel().getSelectedItem();
@@ -112,17 +122,6 @@ public class CtrlAlbumBrowser implements Initializable {
       return result;
     }, this.imagesScrollPane.vvalueProperty());
 
-    this.visibleImageViews = new FilteredList<>(this.imagesPane.getChildren());
-    this.visibleImageViews.predicateProperty().bind(Bindings.createObjectBinding(() -> 
-      node -> {
-        double v = this.imagesScrollPane.getVvalue();
-        double index = Double.valueOf(node.getId()) - 1;
-        int count = photosProperty.get().size();
-
-        return (index / count) < v + (24.0 / count);
-      }
-    , this.imagesScrollPane.vvalueProperty(), visibleScrollBounds));
-
     this.imagesScrollPane.setOnScrollFinished((ScrollEvent e) -> {
       this.loadImagesInView();
     });
@@ -142,7 +141,7 @@ public class CtrlAlbumBrowser implements Initializable {
     setAlbums(albumSource.getAlbums());
   }
 
-  private void loadImagesInView() {
+  public void loadImagesInView() {
     for (Node node:visibleImageViews) {
       Photo photo = npMap.get(node);
       if (photo.isLoaded()) continue;
