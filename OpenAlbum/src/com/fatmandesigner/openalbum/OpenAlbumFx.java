@@ -29,6 +29,7 @@ public class OpenAlbumFx extends Application  {
 	@Override
 	public void start(Stage stage) throws IOException {
     albumSource = new AlbumSource();
+    albumSource.sync();
 
     stage.setTitle("Open Album");
 
