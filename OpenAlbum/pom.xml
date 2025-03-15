@@ -23,6 +23,20 @@
           <release>21</release>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.fatmandesigner.openalbum.OpenAlbumFx</mainClass>
+            </manifest>
+          </archive>
+          <descriptors>
+            <descriptor>src/assembly/distribution.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   
