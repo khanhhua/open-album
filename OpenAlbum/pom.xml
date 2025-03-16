@@ -24,7 +24,6 @@
           <release>21</release>
         </configuration>
       </plugin>
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -36,9 +35,9 @@
               <goal>single</goal>
             </goals>
             <configuration>
-              <descriptors>
-                <descriptor>src/assembly/distribution.xml</descriptor>
-              </descriptors>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
               <archive>
                 <manifest>
                   <addClasspath>true</addClasspath>
@@ -49,7 +48,6 @@
           </execution>
         </executions>
       </plugin>
-        -->
     </plugins>
   </build>
   
